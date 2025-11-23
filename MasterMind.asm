@@ -1,5 +1,6 @@
 .data
 .align 2
+	# mensagens #
 MSGBemVindo1: .asciiz "Bem vindo ao Master Mind\n"
 MSGBemVindo2: .asciiz "Jogo feito por: Rayssa Santos e Tiago Chousal\n"
 MSGCores1: .asciiz "Insira uma combinação de 4 cores para fazer uma tentativa\n"
@@ -14,10 +15,12 @@ MSGDerrota1: .asciiz "Oh que pena. Nao acertaste a cobinação ao fim de 10 tentat
 MSGDerrota2: .asciiz "A sequencia correta de cores era: \n"
 MSGPontuacao: .asciiz "Pontuação: \n"
 MSGSettings1: .asciiz "Nesta parte é possível adicionar cores duplicadas ou remover Cores\n" # Depois vejo melhor essa parte
-Matriz: .word 0:40
+MSGSettings2: .asciiz "Nesta parte é possível escolher quantas linhas e quantas colunas\n"
+	# matriz e Input #
+Matriz: .space 400
 MatrizLinhas: .word 10
 MatrizColunas: .word 4
-Input: .space 6
+Input: .space 50
 .text
 .globl main
 
@@ -25,11 +28,13 @@ main:
 
 	# endereços para se utilizar na matriz e no loop do jogo #
 	
-	add $t0, $0, $0 # i -> linhas
-	add $t1, $0, $0 # j -> colunas
-	lw $s2, MatrizColunas # nome totalmente explicativo
-	la $t2, Matriz # nome totalmente explicativo
-	add $s0, $0, $0 # verificação da matriz
+	add $s0, $0, $0 # i -> linhas percorridas
+	add $s1, $0, $0 # j -> colunas percorridas
+	addi $s2, $0, 10 # n -> linhas que podem ser escolhidas
+	addi $s3, $0, 4  # m -> colunas que podem ser escolhidas
+	add $t2, $0, $0 # verificação da matriz
+	la $s4, Matriz # nome totalmente explicativo
+
 	
 	# prints iniciais do joguinho lindo e maravilhoso feito pelos melhores devs do mundo #
 	
@@ -40,12 +45,9 @@ main:
 	la $a0, MSGBemVindo2
 	syscall
 	
-Exit:
-	li $v0, 10
-	syscall
-				
+					
 LoopIString2Matriz:
-	beq $s0, 10, Exit
+	beq $s0, $s2, Exit
 	li $v0, 4
 	la $a0, MSGCores1
 	syscall
@@ -53,34 +55,59 @@ LoopIString2Matriz:
 	syscall
 	li $v0, 8
 	la $a0, Input
-	li $a1, 6
+	li $a1, 50
 	syscall
+	move $s1, $0
+	move $t2, $0
 	
-LoopJString2Matriz:
+LoopVerificacaoString:
 
-	beq $s1, 4, LoopIString2MatrizInc
-	lb $t3, Input($t1)	
-	beq $t3, 'B', LoopJString2MatrizValida                                     #mul $t1, $s0, $s2			# Cálculo: offset = [(i * 4) + j] * 4 onde a 4 seria o sll
-	beq $t3, 'b', LoopJString2MatrizValida                                   #add $t1, $t1, $s1
-	beq $t3, 'G', LoopJString2MatrizValida	                                    #sll $t1, $t0, 2
-	beq $t3, 'g', LoopJString2MatrizValida	                                    #add $t2, $t1, $t0
-	beq $t3, 'R', LoopJString2MatrizValida
-	beq $t3, 'r', LoopJString2MatrizValida
-	beq $t3, 'W', LoopJString2MatrizValida
-	beq $t3, 'w', LoopJString2MatrizValida
-	beq $t3, 'O', LoopJString2MatrizValida
-	beq $t3, 'o', LoopJString2MatrizValida	                                    #sw $s0, 0($t2)
+	beq $t2, $s3, LoopMatriz2StringReset
+	lb $t4, Input($s1)	
+	beq $t4, 'B', LoopJString2MatrizValida                                     			
+	beq $t4, 'b', LoopJString2MatrizValida                                   
+	beq $t4, 'G', LoopJString2MatrizValida	                                    
+	beq $t4, 'g', LoopJString2MatrizValida	                                    
+	beq $t4, 'R', LoopJString2MatrizValida
+	beq $t4, 'r', LoopJString2MatrizValida
+	beq $t4, 'Y', LoopJString2MatrizValida
+	beq $t4, 'y', LoopJString2MatrizValida
+	beq $t4, 'W', LoopJString2MatrizValida
+	beq $t4, 'w', LoopJString2MatrizValida
+	beq $t4, 'O', LoopJString2MatrizValida
+	beq $t4, 'o', LoopJString2MatrizValida	                                    
+	j LoopJString2MatrizInvalida
+
+LoopIString2MatrizInc:
+	move $s1, $0
+	move $t2, $0
+	addi $s0, $s0, 1
+	j LoopIString2Matriz
+
+LoopJString2MatrizValida:
+	addi $t2, $t2, 1
 	addi $s1, $s1, 1
 	j LoopJString2Matriz
 
-LoopIString2MatrizInc:
-	move $0, $s1
-	addi $s0, $s0, 1
+LoopJString2MatrizInvalida:
+	li $v0, 4
+	la $a0, MSGTentativaInvalida
+	syscall
 	j LoopIString2Matriz
-LoopJString2MatrizInv:
-	li $s2, $0
-	j LoopJString2Matriz
-
-LoopJString2MatrizValida:
-
-
+	
+LoopMatriz2StringReset:
+	move $t2,$0	
+LoopMatriz2String:
+	beq $t2, $s3, LoopJMasterMind
+	lb $t4, Input($s1)
+	mul $t1, $s0, $s3           # Cálculo: offset = [base + (i * M) + j] 
+	add $t1, $t1, $s1
+	add $t5, $s4, $t1
+	sb $t4, 0($t5)
+	addi $t2, $t2, 1
+	j LoopMatriz2String
+LoopJMasterMind:
+Exit:
+	li $v0, 10
+	syscall
+	
