@@ -3,8 +3,17 @@
 	# mensagens #
 MSGBemVindo1: .asciiz "Bem vindo ao Master Mind\n"
 MSGBemVindo2: .asciiz "Jogo feito por: Rayssa Santos e Tiago Chousal\n"
-MSGCores1: .asciiz "Insira uma combinação de 4 cores para fazer uma tentativa\n"
-MSGCores2: .asciiz "Possibilidades de escolhas: \nBlue (B) \nGreen (G) \nRed(R) \nYellow(Y') \nWhite(W) \nOrange(O)\n"
+MSGMenu1: .asciiz "| Jogar (0)|\n"
+MSGMenu2: .asciiz "| Definições (1)|\n"
+MSGMenu3: .asciiz "| Sair (2)|\n"
+MSGMenu4: .asciiz "| Opção inválida |\n Por favor insira 0, 1 ou 2 para realizar alguma ação no menu\n"
+MSGSettings1: .asciiz "| Selecione se quer um jogo normal (0) ou se quer um jogo personalizado (1)|\n"
+MSGSettings2: .asciiz "| Insira um número de colunas (M) >=4 |\n"
+MSGSettings3: .asciiz "| Insira um número de linhas (N) >=2 |\n"
+MSGSettings4: .asciiz "| Jogo personalizado criado com sucesso|\n"
+MSGSettingsVer1: .asciiz "| Colunas inválidas\n Insira um número inteiro de colunas válido\n"
+MSGSettingsVer1: .asciiz "| Linhas inválidas\n Insira um número inteiro de linhas válido\n"
+MSGCores2: .asciiz "Possibilidades de escolhas: \nBlue (B) \nGreen (G) \nRed(R) \nYellow(Y) \nWhite(W) \nOrange(O)\n"
 MSGTentativaInvalida: .asciiz "Tentativa invalida.\n Faça uma tentativa que obedeça as seguintes condições:\n"
 MSGTentativaIncorreta1: .asciiz "Oh que pena. Não acertaste a combinação. Volta a tentar\n"
 MSGTentativaIncorreta2: .asciiz "Tivestes " # O espaço é para o inteiro que seria ou para as bolas corretas ou incorretas
@@ -44,7 +53,59 @@ main:
 	li $v0, 4
 	la $a0, MSGBemVindo2
 	syscall
+
+
+Menu:
+	li $v0, 4
+	la $a0,MSGMenu1
+	syscall
+	li $v0, 4
+	la $a0, MSGMenu2
+	syscall
+	li $v0, 4
+	la $a0, MSGMenu3
+	syscall
+	li $v0, 5
+	syscall
+	move $t0, $v0
+	beq $t0, 0, LoopIString2Matriz
+	beq $t0, 1, Settings
+	beq $t0, 2, Exit
+	j OpcaoInvalida
 	
+Settings:		
+	li $v0, 4
+	la $a0, MSGSettings1
+	syscall
+	beq $t0, 0, Menu
+	beq $t0, 1, SettingsJogoPersonalizado
+	j Opcao
+SettingsJogoPersonalizado:
+	li $v0, 4
+	la $a0, MSGSettings2
+	syscall
+	li $v0, 5
+	syscall
+	move $s3, $a0
+	blt $s3, 4, OpcaoInvalidaColunas
+	
+	li $v0, 4
+	la $a0, MSGSettings3
+	syscall
+	li $v0, 5
+	syscall
+	move $s2, $a0
+	blt $s3, 2, OpcaoInvalidaLinhas
+	li $v0, 4
+	la $a0, MSGSettings4
+	syscall
+	j Settings
+	
+OpcaoInvalida:
+	li $v0, 4
+	la $a0, MSGMenu4
+	syscall
+	j Menu
 					
 LoopIString2Matriz:
 	beq $s0, $s2, Exit
@@ -87,7 +148,7 @@ LoopIString2MatrizInc:
 LoopJString2MatrizValida:
 	addi $t2, $t2, 1
 	addi $s1, $s1, 1
-	j LoopJString2Matriz
+	j LoopVerificacaoString
 
 LoopJString2MatrizInvalida:
 	li $v0, 4
