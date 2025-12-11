@@ -1,7 +1,7 @@
-		.data
-cores:		.asciiz "BGRYWO"		# blue, green, red, yellow, white, orange
-sequencia:	.space 4		# espaço para guardar a sequência de letras (pode haver repetições)
-		.text
+.data
+cores:	.asciiz "BGRYWO"		# blue, green, red, yellow, white, orange
+sequencia:.space 4		# espaço para guardar a sequência de letras (pode haver repetições)
+.text
 
 main:		# imprimir sequência gerada (para testar)
     	jal gerador
