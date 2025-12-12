@@ -33,7 +33,6 @@ Input: .space 50
 main:
 
 	# endereços para se utilizar na matriz e no loop do jogo #
-	
 	add $s0, $0, $0 # i -> linhas percorridas
 	add $s1, $0, $0 # j -> colunas percorridas
 	addi $s2, $0, 10 # n -> linhas que podem ser escolhidas
@@ -42,10 +41,8 @@ main:
 	add $t2, $0, $0 # verificação da matriz
 	la $s4, Matriz # nome totalmente explicativo
 
-
 	
 	# prints iniciais do joguinho lindo e maravilhoso feito pelos melhores devs do mundo #
-	
 	li $v0, 4
 	la $a0, MSGBemVindo1
 	syscall
@@ -55,6 +52,8 @@ main:
 
 
 Menu:
+
+	# prints do menu onde t0 é o input dado #
 	li $v0, 4
 	la $a0, MSGMenu1
 	syscall
@@ -72,7 +71,9 @@ Menu:
 	beq $t0, 2, Exit
 	j OpcaoInvalida
 	
-Settings:		
+Settings:	
+	
+	# prints das definições onde t0 é o input #	
 	li $v0, 4
 	la $a0, MSGSettings1
 	syscall
@@ -85,10 +86,14 @@ Settings:
 	# Falta adicionar a opção das cores (alínea J), mas ainda não entendi a lore
 	j OpcaoInvalidaSettings
 JogoPadrao:
+
+	# setta as linhas para 10 (s2=10) e as colunas para 4 (s3=4) como um jogo default #
 	li $s3, 4
-	li $s1, 10
+	li $s2, 10
 	j Menu
 SettingsJogoPersonalizado:
+	
+	# permite o utiizador escolher como quer o tabuleiro onde s3 são as colunas e s2 as linhas #
 	li $v0, 4
 	la $a0, MSGSettings2
 	syscall
@@ -110,6 +115,8 @@ SettingsJogoPersonalizado:
 	j Settings
 	
 OpcaoInvalida:
+	
+	# caso a opção no menu seja inválida, vai para esta label só para avisar e volta para o menu #
 	li $v0, 4
 	la $a0, MSGMenu4
 	syscall
