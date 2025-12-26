@@ -20,13 +20,7 @@ MSGCores1Half2: .asciiz " cores para fazer uma tentativa\n"
 MSGCores2: .asciiz "Possibilidades de escolhas: \nBlue (B) \nGreen (G) \nRed(R) \nYellow(Y) \nWhite(W) \nOrange(O)\n"
 MSGTentativaInvalida: .asciiz "Tentativa invalida.\n Faça uma tentativa que obedeça as seguintes condições:\n"
 MSGTentativaIncorreta1: .asciiz "Oh que pena. Não acertaste a combinação. Volta a tentar\n"
-MSGTentativaIncorreta2: .asciiz "Tivestes " # O espaço é para o inteiro que seria ou para as bolas corretas ou incorretas
-MSGTentativaIncorreta3: .asciiz "bolas incorretas\n"
-MSGTentativaCorreta: .asciiz "bolas corretas\n"
-MSGVitoria: .asciiz "PARABÉNS!!! Acertaste a combinação.\nMuito Inteligente"
-MSGDerrota1: .asciiz "Oh que pena. Nao acertaste a cobinação ao fim de 10 tentativas\n"
-MSGDerrota2: .asciiz "A sequencia correta de cores era: \n"
-MSGPontuacao: .asciiz "Pontuação: \n"
+
 
 	# matriz e Input #
 Matriz: .space 400
@@ -39,7 +33,6 @@ Input: .space 50
 main:
 
 	# endereços para se utilizar na matriz e no loop do jogo #
-	
 	add $s0, $0, $0 # i -> linhas percorridas
 	add $s1, $0, $0 # j -> colunas percorridas
 	addi $s2, $0, 10 # n -> linhas que podem ser escolhidas
@@ -48,10 +41,8 @@ main:
 	add $t2, $0, $0 # verificação da matriz
 	la $s4, Matriz # nome totalmente explicativo
 
-
 	
 	# prints iniciais do joguinho lindo e maravilhoso feito pelos melhores devs do mundo #
-	
 	li $v0, 4
 	la $a0, MSGBemVindo1
 	syscall
@@ -61,6 +52,8 @@ main:
 
 
 Menu:
+
+	# prints do menu onde t0 é o input dado #
 	li $v0, 4
 	la $a0, MSGMenu1
 	syscall
@@ -78,7 +71,9 @@ Menu:
 	beq $t0, 2, Exit
 	j OpcaoInvalida
 	
-Settings:		
+Settings:	
+	
+	# prints das definições onde t0 é o input #	
 	li $v0, 4
 	la $a0, MSGSettings1
 	syscall
@@ -91,10 +86,14 @@ Settings:
 	# Falta adicionar a opção das cores (alínea J), mas ainda não entendi a lore
 	j OpcaoInvalidaSettings
 JogoPadrao:
+
+	# setta as linhas para 10 (s2=10) e as colunas para 4 (s3=4) como um jogo default #
 	li $s3, 4
-	li $s1, 10
+	li $s2, 10
 	j Menu
 SettingsJogoPersonalizado:
+	
+	# permite o utiizador escolher como quer o tabuleiro onde s3 são as colunas e s2 as linhas #
 	li $v0, 4
 	la $a0, MSGSettings2
 	syscall
@@ -116,6 +115,8 @@ SettingsJogoPersonalizado:
 	j Settings
 	
 OpcaoInvalida:
+	
+	# caso a opção no menu seja inválida, vai para esta label só para avisar e volta para o menu #
 	li $v0, 4
 	la $a0, MSGMenu4
 	syscall
