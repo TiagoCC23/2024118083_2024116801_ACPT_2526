@@ -1,6 +1,7 @@
 .data
 cores:	.asciiz "BGRYWO"		# blue, green, red, yellow, white, orange
 sequencia:.space 4		# espaço para guardar a sequência de letras (pode haver repetições)
+.globl cores
 .text
 
 main:		# imprimir sequência gerada (para testar)

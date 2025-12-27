@@ -48,7 +48,7 @@ DerrotaMasterMind:
 	la $a0, MSGDerrota3
 	syscall
 	li $v0, 4
-	la $ao, cores
+	la $a0, cores
 	syscall
 	
 	# print da pontuação onde perde 3 pontos #
