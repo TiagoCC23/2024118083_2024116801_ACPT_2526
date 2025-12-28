@@ -23,7 +23,7 @@ MSGTentativaIncorreta1: .asciiz "Oh que pena. Não acertaste a combinação. Volta 
 
 
 	# matriz e Input #
-Matriz: .space 400
+
 MatrizLinhas: .word 10
 MatrizColunas: .word 4
 Input: .space 50
@@ -38,9 +38,13 @@ main:
 	add $s1, $0, $0 # j -> colunas percorridas
 	addi $s2, $0, 10 # n -> linhas que podem ser escolhidas
 	addi $s3, $0, 4  # m -> colunas que podem ser escolhidas
+	move $a0, $s2
+	move $a1, $s3
+	jal TabuleiroDinamico
+	move $s4, $v0    # matriz com 10 linhas e 4 colunas
 	add $s5, $0, $0 # Pontuação -> Depois será feita
 	add $t2, $0, $0 # verificação da matriz
-	la $s4, Matriz # nome totalmente explicativo
+	
 
 	
 	# prints iniciais do joguinho lindo e maravilhoso feito pelos melhores devs do mundo #
@@ -91,7 +95,12 @@ JogoPadrao:
 	# setta as linhas para 10 (s2=10) e as colunas para 4 (s3=4) como um jogo default #
 	li $s3, 4
 	li $s2, 10
+	move $a0, $s2
+	move $a1, $s3
+	jal TabuleiroDinamico
+	move $s4, $v0
 	j Menu
+	
 SettingsJogoPersonalizado:
 	
 	# permite o utiizador escolher como quer o tabuleiro onde s3 são as colunas e s2 as linhas #
@@ -113,6 +122,11 @@ SettingsJogoPersonalizado:
 	syscall
 	move $s2, $v0
 	blt $s2, 2, OpcaoInvalidaLinhas
+	
+	move $a0, $s2
+	move $a1, $s3
+	jal TabuleiroDinamico
+	move $s4, $v0
 	
 	# cria o jogo personalizado #
 	li $v0, 4
@@ -258,6 +272,13 @@ EndVerificacao:
 	addi $sp, $sp, 8
 	jr $ra
 
+
+TabuleiroDinamico:
+	mul $a0, $a0, $a1
+	li $v0, 9
+	syscall
+	jr $ra
+	
 
 
 	

@@ -1,12 +1,14 @@
 .data
-cores:	.asciiz "BGRYWO"		# blue, green, red, yellow, white, orange
+coresPadrao: .asciiz "BGRYWO" # blue, green, red, yellow, white, orange
+cores: .space 31			
 sequencia:.space 4		# espaço para guardar a sequência de letras (pode haver repetições)
+NumerodeCores: .word 6
 .globl cores
 .text
 
 main:		# imprimir sequência gerada (para testar)
     	jal gerador
-
+	
     	la $a0, sequencia
     	li $v0, 4
     	syscall
@@ -19,7 +21,8 @@ gerador:	 	#vai gerar a sequencia que precisamos para o jogo
 
 loop:
 	li $v0, 42 	# escolhe um num
-	li $a1, 6	# vai de 0 ate 5
+	add $a0, $0, $0
+	lw $a1, NumerodeCores
 	syscall
 
 	la $s0, cores
@@ -31,6 +34,6 @@ loop:
     	sb $s1, 0($s2)		# guarda a cor
 
 	addi $t0, $t0, 1		# i = 1 + 1
-	blt $t0, 4, loop		# repete 4 vezes para obter a sequencia
+	blt $t0, $s3, loop		# repete m vezes para obter a sequencia
 
 	jr $ra
