@@ -1,4 +1,14 @@
 .data
+
+.globl Menu
+.globl main
+
+.globl sequencia
+.globl tamanho
+
+sequencia: 	.space 4	# espaço seguro para a senha (cores e alfabeto)
+tamanho: 	.word 4		# tamanho padrao (sera atualizado pelo settings por causa do alfabeto)
+
 .align 2
 	# mensagens #
 MSGBemVindo1: .asciiz "Bem vindo ao Master Mind\n"
@@ -28,10 +38,8 @@ MatrizLinhas: .word 10
 MatrizColunas: .word 4
 Input: .space 50
 .text
-.globl main
 
 main:
-
 	# endereços para se utilizar na matriz e no loop do jogo #
 	add $s0, $0, $0 # i -> linhas percorridas
 	add $s1, $0, $0 # j -> colunas percorridas
@@ -41,7 +49,6 @@ main:
 	add $t2, $0, $0 # verificação da matriz
 	la $s4, Matriz # nome totalmente explicativo
 
-	
 	# prints iniciais do joguinho lindo e maravilhoso feito pelos melhores devs do mundo #
 	li $v0, 4
 	la $a0, MSGBemVindo1
@@ -50,9 +57,7 @@ main:
 	la $a0, MSGBemVindo2
 	syscall
 
-
 Menu:
-
 	# prints do menu onde t0 é o input dado #
 	li $v0, 4
 	la $a0, MSGMenu1
@@ -72,7 +77,6 @@ Menu:
 	j OpcaoInvalida
 	
 Settings:	
-	
 	# prints das definições onde t0 é o input #	
 	li $v0, 4
 	la $a0, MSGSettings1
@@ -85,14 +89,14 @@ Settings:
 	beq $t0, 2, Menu # O user poderia quer voltar para o menu e manter o jogo personalizado
 	# Falta adicionar a opção das cores (alínea J), mas ainda não entendi a lore
 	j OpcaoInvalidaSettings
+	
 JogoPadrao:
-
 	# setta as linhas para 10 (s2=10) e as colunas para 4 (s3=4) como um jogo default #
 	li $s3, 4
 	li $s2, 10
 	j Menu
-SettingsJogoPersonalizado:
 	
+SettingsJogoPersonalizado:
 	# permite o utiizador escolher como quer o tabuleiro onde s3 são as colunas e s2 as linhas #
 	li $v0, 4
 	la $a0, MSGSettings2
@@ -115,7 +119,6 @@ SettingsJogoPersonalizado:
 	j Settings
 	
 OpcaoInvalida:
-	
 	# caso a opção no menu seja inválida, vai para esta label só para avisar e volta para o menu #
 	li $v0, 4
 	la $a0, MSGMenu4
@@ -127,6 +130,7 @@ OpcaoInvalidaSettings:
 	la $a0, MSGSettings6
 	syscall
 	j Settings
+	
 OpcaoInvalidaColunas:
 	li $v0, 4
 	la $a0, MSGSettingsVer1
@@ -137,7 +141,8 @@ OpcaoInvalidaLinhas:
 	li $v0, 4
 	la $a0, MSGSettingsVer2
 	syscall
-	j SettingsJogoPersonalizado			
+	j SettingsJogoPersonalizado
+				
 LoopIString2Matriz:
 	beq $s0, $s2, Exit
 	li $v0, 4
@@ -158,8 +163,22 @@ LoopIString2Matriz:
 	move $s1, $0
 	move $t2, $0
 	
+IniciarJogo:
+	sw $s3, tamanho
+	
+	jal gerador
+	
+	la $a0, sequencia
+	li $v0, 4
+	syscall
+	
+	move $a1, $s2
+	
+	jal main_ef
+	
+	j Menu
+	
 LoopVerificacaoString:
-
 	beq $t2, $s3, LoopMatriz2StringReset
 	lb $t4, Input($s1)	
 	beq $t4, 'B', LoopJString2MatrizValida                                     			
@@ -195,6 +214,7 @@ LoopJString2MatrizInvalida:
 	
 LoopMatriz2StringReset:
 	move $t2,$0	
+	
 LoopMatriz2String:
 	beq $t2, $s3, LoopJMasterMind
 	lb $t4, Input($s1)
@@ -204,8 +224,9 @@ LoopMatriz2String:
 	sb $t4, 0($t5)
 	addi $t2, $t2, 1
 	j LoopMatriz2String
+	
 LoopJMasterMind:
+
 Exit:
 	li $v0, 10
 	syscall
-	
