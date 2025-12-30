@@ -42,11 +42,11 @@ loop_to_upper:
 	beq $t1, $zero, fim_upper  # Se for NULL (fim), para
 	beq $t1, 10, fim_upper     # Se for \n (enter), para
 	
-	# Verifica se é minúscula (entre 'a'=97 e 'z'=122)
+	# verifica se é minúscula
 	li $t2, 97
-	blt $t1, $t2, proximo_char # Se for menor que 'a', ignora
+	blt $t1, $t2, proximo_char	# se for menor que 'a', ignora
 	li $t2, 122
-	bgt $t1, $t2, proximo_char # Se for maior que 'z', ignora
+	bgt $t1, $t2, proximo_char	# Se for maior que 'z', ignora
 	
 	# Se chegou aqui, é minúscula. Subtrai 32 para virar maiúscula.
 	sub $t1, $t1, 32
