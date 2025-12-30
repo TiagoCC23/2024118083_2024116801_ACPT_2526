@@ -7,9 +7,8 @@ MSGDerrota3: .asciiz "A sequencia correta de cores era: \n"
 MSGPontuacao: .asciiz "Pontuação: \n"
 .text
 .globl GH
-GH:
 
-	
+GH:
 	# endereços a utilizar #
 	add $s5, $0, $0 # Pontuação
 	
@@ -49,7 +48,7 @@ DerrotaMasterMind:
 	la $a0, MSGDerrota3
 	syscall
 	li $v0, 4
-	la $ao, cores
+	la $a0, cores
 	syscall
 	
 	# print da pontuação onde perde 3 pontos #

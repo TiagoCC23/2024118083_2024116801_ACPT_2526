@@ -1,6 +1,6 @@
-	.data
+.data
 	
-	.globl answer
+.globl answer
 
 msg_win:	.asciiz "\nYOU WIN\n"
 msg_lose:	.asciiz "\nYOU LOSE\n"
@@ -8,12 +8,12 @@ msg_answer:	.asciiz "\na resposta correta era: "
 msg: 	.asciiz "\nDigite a sequencia: "
 right: 	.asciiz " certa(s)\n"
 wrong: 	.asciiz " errada(s)\n"
-answer:	.space 5
-copia: 	.space 5
+answer:	.space 4
+copia: 	.space 4
 	.text
 	
-	.globl main_ef
-	.globl check
+.globl main_ef
+.globl check
 
 # Requisito F	
 main_ef:
@@ -21,10 +21,10 @@ main_ef:
 	sw $ra, 0($sp)
 	
 	li $s7, 0	# vai de 0 ate 9
-	li $s6, 10
+	move $s6, $a1
 
 loop_jogo:
-	beq $s7, $s6, fim_derrota # repete ate s7 chegar em s6
+	beq $s7, $s6, fim_perdeu	# repete ate s7 chegar em s6
 
 	li $v0, 4
 	la $a0, msg
@@ -32,13 +32,36 @@ loop_jogo:
 
 	li $v0, 8
 	la $a0, answer
-	li $a1, 6
+	li $a1, 5
 	syscall
+	
+	la $t0, answer		# Carrega o endereço da string lida
+	
+loop_to_upper:
+	lb $t1, 0($t0)		# Lê o caracter atual
+	beq $t1, $zero, fim_upper  # Se for NULL (fim), para
+	beq $t1, 10, fim_upper     # Se for \n (enter), para
+	
+	# Verifica se é minúscula (entre 'a'=97 e 'z'=122)
+	li $t2, 97
+	blt $t1, $t2, proximo_char # Se for menor que 'a', ignora
+	li $t2, 122
+	bgt $t1, $t2, proximo_char # Se for maior que 'z', ignora
+	
+	# Se chegou aqui, é minúscula. Subtrai 32 para virar maiúscula.
+	sub $t1, $t1, 32
+	sb $t1, 0($t0)		# Salva a letra corrigida na memória
 
+proximo_char:
+	addi $t0, $t0, 1	# proxima letra
+	j loop_to_upper
+
+fim_upper:
 	jal check
 
+
 	li $t9, 4
-	beq $v0, $t9, fim_vitoria
+	beq $v0, $t9, fim_ganhou
 
 	addi $s7, $s7, 1
 	j loop_jogo
@@ -49,7 +72,7 @@ fim_ganhou:
 	syscall
 	j sair
 
-fim_derrota:
+fim_perdeu:
 	li $v0, 4
 	la $a0, msg_lose
 	syscall
@@ -62,7 +85,7 @@ fim_derrota:
     	li $v0, 4
     	syscall
 	
-	j sair_funcao
+	j sair
 
 sair:
 	lw $ra, 0($sp)	# restaurar o $ra para voltar pro main
@@ -86,7 +109,7 @@ loop_copia:
 	blt $t2, 4, loop_copia
 
 	li $s0, 0	# certos
-	li $s1, 0	# errados -> subtração do total com os certos
+	li $s1, 0	# errados
 	li $t0, 0	# i = 0
 	
 loop_certo:

@@ -1,12 +1,12 @@
-		.data
-		
-		.globl sequencia
+.data
+
+.globl cores
 		
 cores:		.asciiz "BGRYWO"	# blue, green, red, yellow, white, orange
-sequencia:	.space 5 	# espaco para guardar a sequencia de letras (pode haver repetições)
+tamanho:	.word 4
 		.text
 		
-		.globl gerador
+.globl gerador
 
 gerador:	 	#vai gerar a sequencia que precisamos para o jogo
 	li $t0, 0 	# i = 0, para fazer o loop
