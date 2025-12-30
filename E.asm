@@ -1,75 +1,32 @@
 	.data
 	
 	.globl answer
-
-msg_win:	.asciiz "\nYOU WIN\n"
-msg_lose:	.asciiz "\nYOU LOSE\n"
-msg_answer:	.asciiz "\na resposta correta era: "
-msg: 	.asciiz "\nDigite a sequencia: "
-right: 	.asciiz " certa(s)\n"
-wrong: 	.asciiz " errada(s)\n"
-answer:	.space 5
-copia: 	.space 5
+	
+msg: .asciiz "\nDigite a sequencia: "
+right: .asciiz " certa(s)\n"
+wrong: .asciiz " errada(s)\n"
+answer: .space 5
+copia: .space 5
 	.text
 	
-	.globl main_ef
+	.globl main_e
 	.globl check
-
-# Requisito F	
-main_ef:
-	addi $sp, $sp, -4
-	sw $ra, 0($sp)
 	
-	li $s7, 0	# vai de 0 ate 9
-	li $s6, 10
-
-loop_jogo:
-	beq $s7, $s6, fim_derrota # repete ate s7 chegar em s6
-
+main_e:
 	li $v0, 4
 	la $a0, msg
 	syscall
 
-	li $v0, 8
+	li $v0, 8 # para ler string
 	la $a0, answer
-	li $a1, 6
+	li $a1, 5 # para ler 4 letras e o '\0'
 	syscall
-
+	
 	jal check
-
-	li $t9, 4
-	beq $v0, $t9, fim_vitoria
-
-	addi $s7, $s7, 1
-	j loop_jogo
-
-fim_ganhou:
-	li $v0, 4
-	la $a0, msg_win
-	syscall
-	j sair
-
-fim_derrota:
-	li $v0, 4
-	la $a0, msg_lose
-	syscall
 	
-	li $v0, 4
-	la $a0, msg_answer
+	li $v0, 10
 	syscall
-	
-	la $a0, sequencia
-    	li $v0, 4
-    	syscall
-	
-	j sair_funcao
 
-sair:
-	lw $ra, 0($sp)	# restaurar o $ra para voltar pro main
-	addi $sp, $sp, 4
-	jr $ra
-
-# Requisito E
 check:
 	la $t0, sequencia
 	la $t1, copia

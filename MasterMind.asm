@@ -1,7 +1,7 @@
 .data
 .align 2
 	# mensagens #
-MSGBemVindo1: .asciiz "Bem vindo ao Master Mind\n"
+MSGBemVindo1: .asciiz "Bem vindo ao MasterMind\n"
 MSGBemVindo2: .asciiz "Jogo feito por: Rayssa Santos e Tiago Chousal\n"
 MSGMenu1: .asciiz "| Jogar (0)|\n"
 MSGMenu2: .asciiz "| Definições (1)|\n"
