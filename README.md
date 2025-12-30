@@ -63,12 +63,6 @@ Sem estas opções ativadas, o programa pode não encontrar as funções externa
     * Quantas cores estão **certas mas na posição errada**.
 5.  **Fim de Jogo:** Ganha se acertar a sequência exata. Perde se não conseguir após 10 tentativas.
 
-## 📂 Estrutura dos Ficheiros
-
-* `main.asm`: Ponto de entrada, gestão do Menu Principal e Definições.
-* `EF.asm`: Lógica principal do jogo (Loop de tentativas, validação de input e verificação de vitória/derrota).
-* `gerador.asm`: Função responsável por gerar a senha aleatória baseada nas cores disponíveis.
-
 ## 👥 Autores
 
 * **Rayssa Santos**
