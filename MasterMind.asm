@@ -167,7 +167,7 @@ IniciarJogo:
 	sw $s3, tamanho
 	
 	jal gerador
-	
+
 	la $a0, sequencia
 	li $v0, 4
 	syscall
