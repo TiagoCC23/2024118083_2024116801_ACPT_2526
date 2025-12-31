@@ -6,7 +6,7 @@
 .globl sequencia
 .globl tamanho
 
-sequencia: 	.space 4	# espaï¿½o seguro para a senha (cores e alfabeto)
+sequencia: 	.space 4	# espaço seguro para a senha (cores e alfabeto)
 tamanho: 	.word 4		# tamanho padrao (sera atualizado pelo settings por causa do alfabeto)
 
 .align 2
@@ -14,22 +14,22 @@ tamanho: 	.word 4		# tamanho padrao (sera atualizado pelo settings por causa do 
 MSGBemVindo1: .asciiz "Bem vindo ao Master Mind\n"
 MSGBemVindo2: .asciiz "Jogo feito por: Rayssa Santos e Tiago Chousal\n"
 MSGMenu1: .asciiz "| Jogar (0)|\n"
-MSGMenu2: .asciiz "| Definiï¿½ï¿½es (1)|\n"
+MSGMenu2: .asciiz "| Definições (1)|\n"
 MSGMenu3: .asciiz "| Sair (2)|\n"
-MSGMenu4: .asciiz "| Opï¿½ï¿½o invï¿½lida |\n Por favor insira 0, 1 ou 2 para realizar alguma aï¿½ï¿½o no menu\n"
+MSGMenu4: .asciiz "| Opção inválida |\n Por favor insira 0, 1 ou 2 para realizar alguma ação no menu\n"
 MSGSettings1: .asciiz "| Selecione se quer:\n| jogo normal (0)|\n| jogo personalizado (1)|\n| Voltar para o menu (2)|\n"
-MSGSettings2: .asciiz "| Insira um nï¿½mero de colunas (M) >=4 |\n"
-MSGSettings3: .asciiz "| Insira um nï¿½mero de linhas (N) >=2 |\n"
+MSGSettings2: .asciiz "| Insira um número de colunas (M) >=4 |\n"
+MSGSettings3: .asciiz "| Insira um número de linhas (N) >=2 |\n"
 MSGSettings4: .asciiz "| Jogo personalizado criado com sucesso|\n"
 MSGSettings5: .asciiz "Nesta parte ï¿½ possï¿½vel adicionar cores duplicadas ou remover Cores\n" # Depois vejo melhor essa parte
-MSGSettings6: .asciiz "| Opï¿½ï¿½o Invï¿½lida |\n Por favor insira 0, 1, 2 ou 3 para realizar alguma aï¿½ï¿½o no menu\n"
-MSGSettingsVer1: .asciiz "| Colunas invï¿½lidas\n Insira um nï¿½mero inteiro de colunas vï¿½lido\n"
-MSGSettingsVer2: .asciiz "| Linhas invï¿½lidas\n Insira um nï¿½mero inteiro de linhas vï¿½lido\n"
-MSGCores1Half1: .asciiz "Insira uma combinaï¿½ï¿½o de "
+MSGSettings6: .asciiz "| Opção Inválida |\n Por favor insira 0, 1, 2 ou 3 para realizar alguma ação no menu\n"
+MSGSettingsVer1: .asciiz "| Colunas inválidas\n Insira um número inteiro de colunas válido\n"
+MSGSettingsVer2: .asciiz "| Linhas inválidas\n Insira um número inteiro de linhas válido\n"
+MSGCores1Half1: .asciiz "Insira uma combinação de "
 MSGCores1Half2: .asciiz " cores para fazer uma tentativa\n"
 MSGCores2: .asciiz "Possibilidades de escolhas: \n(B) \n(G) \n(R) \n(Y) \n(W) \n(O)\n"
-MSGTentativaInvalida: .asciiz "Tentativa invalida.\n Faï¿½a uma tentativa que obedeï¿½a as seguintes condiï¿½ï¿½es:\n"
-MSGTentativaIncorreta1: .asciiz "Oh que pena. Nï¿½o acertaste a combinaï¿½ï¿½o. Volta a tentar\n"
+MSGTentativaInvalida: .asciiz "Tentativa invalida.\n Faça uma tentativa que obedeçaa as seguintes condições:\n"
+MSGTentativaIncorreta1: .asciiz "Oh que pena. Não acertaste a combinação. Volta a tentar\n"
 
 
 	# matriz e Input #
@@ -42,7 +42,7 @@ Input: .space 50
 .globl main
 
 main:
-	# endereï¿½os para se utilizar na matriz e no loop do jogo #
+	# endereços para se utilizar na matriz e no loop do jogo #
 	add $s0, $0, $0 # i -> linhas percorridas
 	add $s1, $0, $0 # j -> colunas percorridas
 	addi $s2, $0, 10 # n -> linhas que podem ser escolhidas
@@ -51,8 +51,8 @@ main:
 	move $a1, $s3
 	jal TabuleiroDinamico
 	move $s4, $v0    # matriz com 10 linhas e 4 colunas
-	add $s5, $0, $0 # Pontuaï¿½ï¿½o -> Depois serï¿½ feita
-	add $t2, $0, $0 # verificaï¿½ï¿½o da matriz
+	add $s5, $0, $0 # Pontuação -> Depois será feita
+	add $t2, $0, $0 # verificação da matriz
 	
 
 	# prints iniciais do joguinho lindo e maravilhoso feito pelos melhores devs do mundo #
@@ -64,7 +64,7 @@ main:
 	syscall
 
 Menu:
-	# prints do menu onde t0 ï¿½ o input dado #
+	# prints do menu onde t0 é o input dado #
 	li $v0, 4
 	la $a0, MSGMenu1
 	syscall
@@ -83,7 +83,7 @@ Menu:
 	j OpcaoInvalida
 	
 Settings:	
-	# prints das definiï¿½ï¿½es onde t0 ï¿½ o input #	
+	# prints das definições onde t0 é o input #	
 	li $v0, 4
 	la $a0, MSGSettings1
 	syscall
@@ -93,7 +93,7 @@ Settings:
 	beq $t0, 0, JogoPadrao # O user pode ter mudado de ideias e querer um jogo em vez de um jogo personalizado
 	beq $t0, 1, SettingsJogoPersonalizado # O user queria settar um jogo personalizado
 	beq $t0, 2, Menu # O user poderia quer voltar para o menu e manter o jogo personalizado
-	# Falta adicionar a opï¿½ï¿½o das cores (alï¿½nea J), mas ainda nï¿½o entendi a lore
+	# Falta adicionar a opção das cores (alínea J), mas ainda não entendi a lore
 	j OpcaoInvalidaSettings
 	
 JogoPadrao:
@@ -108,7 +108,7 @@ JogoPadrao:
 	
 	
 SettingsJogoPersonalizado:
-	# permite o utiizador escolher como quer o tabuleiro onde s3 sï¿½o as colunas e s2 as linhas #
+	# permite o utiizador escolher como quer o tabuleiro onde s3 são as colunas e s2 as linhas #
 	
 	# colunas #
 	li $v0, 4
@@ -140,7 +140,7 @@ SettingsJogoPersonalizado:
 	j Settings
 	
 OpcaoInvalida:
-	# caso a opï¿½ï¿½o no menu seja invï¿½lida, vai para esta label sï¿½ para avisar e volta para o menu #
+	# caso a opção no menu seja inválida, vai para esta label só para avisar e volta para o menu #
 	li $v0, 4
 	la $a0, MSGMenu4
 	syscall
@@ -148,7 +148,7 @@ OpcaoInvalida:
 	
 OpcaoInvalidaSettings:
 
-	# caso a opï¿½ï¿½o nas settings seja invï¿½lida, vai para esta label sï¿½ para avisar e depois volta para as settings #
+	# caso a opção nas settings seja inválida, vai para esta label só para avisar e depois volta para as settings #
 	li $v0, 4
 	la $a0, MSGSettings6
 	syscall
@@ -156,7 +156,7 @@ OpcaoInvalidaSettings:
 	
 OpcaoInvalidaColunas:
 	
-	# caso o nï¿½meros de colunas (s3) seja menor que 4, ele vai para esta label e volta para o ï¿½nicio do jogo personalizado como consequï¿½ncia #
+	# caso o números de colunas (s3) seja menor que 4, ele vai para esta label e volta para o inicio do jogo personalizado como consequêcia #
 	li $v0, 4
 	la $a0, MSGSettingsVer1
 	syscall
@@ -164,7 +164,7 @@ OpcaoInvalidaColunas:
 	
 OpcaoInvalidaLinhas:
 
-	# caso o nï¿½meros de linhas (s2) seja menor que 4, ele vai para esta label e volta para o ï¿½nicio do jogo personalizado como consequï¿½ncia #
+	# caso o números de linhas (s2) seja menor que 4, ele vai para esta label e volta para o inicio do jogo personalizado como consequência #
 	li $v0, 4
 	la $a0, MSGSettingsVer2
 	syscall
@@ -250,7 +250,7 @@ LoopMatriz2StringReset:
 LoopMatriz2String:
 	beq $t2, $s3, LoopJMasterMind
 	lb $t4, Input($s1)
-	mul $t1, $s0, $s3           # Cï¿½lculo: offset = [base + (i * M) + j] 
+	mul $t1, $s0, $s3           # Cálculo: offset = [base + (i * M) + j] 
 	add $t1, $t1, $s1
 	add $t5, $s4, $t1
 	sb $t4, 0($t5)
@@ -264,7 +264,7 @@ Exit:
 	li $v0, 10
 	syscall
 
-	# Funï¿½ï¿½es #
+	# Funções #
 Verificacao:
 	addi $sp, $sp, -8
 	sw $ra, 4($sp)

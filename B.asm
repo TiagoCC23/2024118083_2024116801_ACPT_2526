@@ -1,12 +1,17 @@
 .data
 
 .globl cores
-		
-cores:		.asciiz "BGRYWO"	# blue, green, red, yellow, white, orange
+
+coresPadrao: .asciiz "BGRYWO"	
+cores:		.asciiz 	# blue, green, red, yellow, white, orange
 tamanho:	.word 4
-		.text
 		
+.text			
 .globl gerador
+.globl cores
+.globl numeroDeCores
+.globl resetCores
+
 
 gerador:	 	#vai gerar a sequencia que precisamos para o jogo
 	li $t0, 0 	# i = 0, para fazer o loop
