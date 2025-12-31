@@ -9,9 +9,8 @@ MSGPontuacao: .asciiz "Pontuação: \n"
 
 .text
 .globl GH
-GH:
 
-	
+GH:
 	# endereços a utilizar #
 	add $s5, $0, $0 # Pontuação
 	
