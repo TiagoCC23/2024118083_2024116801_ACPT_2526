@@ -26,7 +26,7 @@ O projeto cumpre os requisitos propostos, incluindo:
 
 ## 🚀 Como Executar (Instalação e Configuração)
 
-Para rodar este projeto, é necessário ter o [MARS MIPS Simulator](http://courses.missouristate.edu/kenvollmar/mars/) instalado (requer Java).
+Para rodar este projeto, é necessário ter o [MARS MIPS Simulator](https://github.com/dpetersanderson/MARS/releases/download/v.4.5.1/Mars4_5.jar) instalado (requer Java).
 
 ### Passo a Passo
 
