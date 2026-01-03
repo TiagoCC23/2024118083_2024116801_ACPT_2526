@@ -4,7 +4,9 @@ MSGVitoria: .asciiz "PARABÉNS!!! Acertaste a combinação.\nMuito Inteligente"
 MSGDerrota1: .asciiz "Oh que pena. Não acertaste a cobinação ao fim de "
 MSGDerrota2: .asciiz " tentativas\n"
 MSGDerrota3: .asciiz "A sequencia correta de cores era: \n"
+MSGDerrota4: .asciiz "\nEstiveste perto, mas morreste na praia \n"
 MSGPontuacao: .asciiz "Pontuação: \n"
+
 .text
 .globl GH
 
@@ -78,3 +80,17 @@ PontuacaoNegativa:
 	move $a0, $s5
 	syscall
 	j Menu
+
+DerrotaParcial:
+	addi $t0, $0, 3
+	#mul $s5, #registo dos certos, $t0 
+	li $v0, 4
+	la $a0, MSGDerrota4
+	syscall
+	
+	
+	li $v0, 1
+	move $a0, $s5
+	syscall
+	j Menu
+	

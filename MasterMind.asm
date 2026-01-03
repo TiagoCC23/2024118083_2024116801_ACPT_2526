@@ -4,10 +4,10 @@
 .globl main
 
 .globl sequencia
-.globl tamanho
 
-sequencia: 	.space 4	# espaço seguro para a senha (cores e alfabeto)
-tamanho: 	.word 4		# tamanho padrao (sera atualizado pelo settings por causa do alfabeto)
+
+sequencia: 	.space 31	# espaço seguro para a senha (cores e alfabeto)
+
 
 .align 2
 	# mensagens #
@@ -17,37 +17,47 @@ MSGMenu1: .asciiz "| Jogar (0)|\n"
 MSGMenu2: .asciiz "| Definições (1)|\n"
 MSGMenu3: .asciiz "| Sair (2)|\n"
 MSGMenu4: .asciiz "| Opção inválida |\n Por favor insira 0, 1 ou 2 para realizar alguma ação no menu\n"
-MSGSettings1: .asciiz "| Selecione se quer:\n| jogo normal (0)|\n| jogo personalizado (1)|\n| Voltar para o menu (2)|\n"
+MSGSettings1: .asciiz "| Selecione se quer:\n| Jogo normal (0)|\n| Mudar o tabuleiro (1)|\n| Mudar o alfabeto (2)|\n| Voltar para o menu (3)|\n"
 MSGSettings2: .asciiz "| Insira um número de colunas (M) >=4 |\n"
 MSGSettings3: .asciiz "| Insira um número de linhas (N) >=2 |\n"
 MSGSettings4: .asciiz "| Jogo personalizado criado com sucesso|\n"
-MSGSettings5: .asciiz "Nesta parte é possível adicionar cores duplicadas ou remover Cores\n" # Depois vejo melhor essa parte
 MSGSettings6: .asciiz "| Opção Inválida |\n Por favor insira 0, 1, 2 ou 3 para realizar alguma ação no menu\n"
 MSGSettingsVer1: .asciiz "| Colunas inválidas\n Insira um número inteiro de colunas válido\n"
 MSGSettingsVer2: .asciiz "| Linhas inválidas\n Insira um número inteiro de linhas válido\n"
 MSGCores1Half1: .asciiz "Insira uma combinação de "
 MSGCores1Half2: .asciiz " cores para fazer uma tentativa\n"
-MSGCores2: .asciiz "Possibilidades de escolhas: \nBlue (B) \nGreen (G) \nRed(R) \nYellow(Y) \nWhite(W) \nOrange(O)\n"
+MSGCores2: .asciiz "Possibilidades de escolhas: \n"
+MSGCores3: .asciiz " "
+MSGCores4: .asciiz "\n"
 MSGTentativaInvalida: .asciiz "Tentativa invalida.\n Faça uma tentativa que obedeça as seguintes condições:\n"
 MSGTentativaIncorreta1: .asciiz "Oh que pena. Não acertaste a combinação. Volta a tentar\n"
 
 
 	# matriz e Input #
-Matriz: .space 400
+
 MatrizLinhas: .word 10
 MatrizColunas: .word 4
 Input: .space 50
 .text
+#.globl Menu
+#.globl main
 
-main:
+
+main:	
+	# Função que já atualiza as cores #
+	jal UpdateCores
 	# endereços para se utilizar na matriz e no loop do jogo #
 	add $s0, $0, $0 # i -> linhas percorridas
 	add $s1, $0, $0 # j -> colunas percorridas
 	addi $s2, $0, 10 # n -> linhas que podem ser escolhidas
 	addi $s3, $0, 4  # m -> colunas que podem ser escolhidas
+	move $a0, $s2
+	move $a1, $s3
+	jal TabuleiroDinamico
+	move $s4, $v0    # matriz com 10 linhas e 4 colunas
 	add $s5, $0, $0 # Pontuação -> Depois será feita
 	add $t2, $0, $0 # verificação da matriz
-	la $s4, Matriz # nome totalmente explicativo
+	
 
 	# prints iniciais do joguinho lindo e maravilhoso feito pelos melhores devs do mundo #
 	li $v0, 4
@@ -85,8 +95,9 @@ Settings:
 	syscall
 	move $t0, $v0
 	beq $t0, 0, JogoPadrao # O user pode ter mudado de ideias e querer um jogo em vez de um jogo personalizado
-	beq $t0, 1, SettingsJogoPersonalizado # O user queria settar um jogo personalizado
-	beq $t0, 2, Menu # O user poderia quer voltar para o menu e manter o jogo personalizado
+	beq $t0, 1, SettingsTabuleiroPersonalizado # O user queria settar um tabuleiro personalizado
+	beq $t0, 2, SettingsAlfabetoPersonalizado # O user queria settar um alfabeto personalizado
+	beq $t0, 3, Menu # O user poderia quer voltar para o menu e manter o jogo personalizado
 	# Falta adicionar a opção das cores (alínea J), mas ainda não entendi a lore
 	j OpcaoInvalidaSettings
 	
@@ -94,10 +105,20 @@ JogoPadrao:
 	# setta as linhas para 10 (s2=10) e as colunas para 4 (s3=4) como um jogo default #
 	li $s3, 4
 	li $s2, 10
+	move $a0, $s2
+	move $a1, $s3
+	jal TabuleiroDinamico
+	move $s4, $v0
 	j Menu
+
+SettingsAlfabetoPersonalizado:
+	jal AlterarAlfabeto
+	j Settings
 	
-SettingsJogoPersonalizado:
+SettingsTabuleiroPersonalizado:
 	# permite o utiizador escolher como quer o tabuleiro onde s3 são as colunas e s2 as linhas #
+	
+	# colunas #
 	li $v0, 4
 	la $a0, MSGSettings2
 	syscall
@@ -106,6 +127,7 @@ SettingsJogoPersonalizado:
 	move $s3, $v0
 	blt $s3, 4, OpcaoInvalidaColunas
 	
+	# linhas #
 	li $v0, 4
 	la $a0, MSGSettings3
 	syscall
@@ -113,6 +135,13 @@ SettingsJogoPersonalizado:
 	syscall
 	move $s2, $v0
 	blt $s2, 2, OpcaoInvalidaLinhas
+	
+	move $a0, $s2
+	move $a1, $s3
+	jal TabuleiroDinamico
+	move $s4, $v0
+	
+	# cria o jogo personalizado #
 	li $v0, 4
 	la $a0, MSGSettings4
 	syscall
@@ -126,24 +155,31 @@ OpcaoInvalida:
 	j Menu
 	
 OpcaoInvalidaSettings:
+
+	# caso a opção nas settings seja inválida, vai para esta label só para avisar e depois volta para as settings #
 	li $v0, 4
 	la $a0, MSGSettings6
 	syscall
 	j Settings
 	
 OpcaoInvalidaColunas:
+	
+	# caso o números de colunas (s3) seja menor que 4, ele vai para esta label e volta para o inicio do jogo personalizado como consequêcia #
 	li $v0, 4
 	la $a0, MSGSettingsVer1
 	syscall
-	j SettingsJogoPersonalizado	
+	j SettingsTabuleiroPersonalizado	
 	
 OpcaoInvalidaLinhas:
+
+	# caso o números de linhas (s2) seja menor que 4, ele vai para esta label e volta para o inicio do jogo personalizado como consequência #
 	li $v0, 4
 	la $a0, MSGSettingsVer2
 	syscall
-	j SettingsJogoPersonalizado
+	j SettingsTabuleiroPersonalizado	
 				
 LoopIString2Matriz:
+
 	beq $s0, $s2, Exit
 	li $v0, 4
 	la $a0, MSGCores1Half1
@@ -156,6 +192,7 @@ LoopIString2Matriz:
 	syscall
 	la $a0, MSGCores2
 	syscall
+	jal TextoInicial
 	li $v0, 8
 	la $a0, Input
 	li $a1, 50
@@ -164,8 +201,7 @@ LoopIString2Matriz:
 	move $t2, $0
 	
 IniciarJogo:
-	sw $s3, tamanho
-	
+		
 	jal gerador
 
 	la $a0, sequencia
@@ -179,27 +215,30 @@ IniciarJogo:
 	j Menu
 	
 LoopVerificacaoString:
-	beq $t2, $s3, LoopMatriz2StringReset
-	lb $t4, Input($s1)	
-	beq $t4, 'B', LoopJString2MatrizValida                                     			
-	beq $t4, 'b', LoopJString2MatrizValida                                   
-	beq $t4, 'G', LoopJString2MatrizValida	                                    
-	beq $t4, 'g', LoopJString2MatrizValida	                                    
-	beq $t4, 'R', LoopJString2MatrizValida
-	beq $t4, 'r', LoopJString2MatrizValida
-	beq $t4, 'Y', LoopJString2MatrizValida
-	beq $t4, 'y', LoopJString2MatrizValida
-	beq $t4, 'W', LoopJString2MatrizValida
-	beq $t4, 'w', LoopJString2MatrizValida
-	beq $t4, 'O', LoopJString2MatrizValida
-	beq $t4, 'o', LoopJString2MatrizValida	                                    
-	j LoopJString2MatrizInvalida
+
+	beq $t2, $s3, StringCandidata
+	lb $a0, Input($s1)	
+
+	jal Verificacao
+	move $t4, $v0
+	beq $t4, $0, LoopJString2MatrizInvalida
+	move $t4, $v1
+	sb $t4, Input($s1)                        			                     
+	j LoopJString2MatrizValida
+	
 
 LoopIString2MatrizInc:
 	move $s1, $0
 	move $t2, $0
 	addi $s0, $s0, 1
 	j LoopIString2Matriz
+
+
+StringCandidata:
+	lb $t5, Input($s1)
+	beq $t5, 10, LoopMatriz2StringReset
+	beq $t5, 0, LoopMatriz2StringReset
+	j LoopJString2MatrizInvalida
 
 LoopJString2MatrizValida:
 	addi $t2, $t2, 1
@@ -214,6 +253,7 @@ LoopJString2MatrizInvalida:
 	
 LoopMatriz2StringReset:
 	move $t2,$0	
+	move $s1, $0
 	
 LoopMatriz2String:
 	beq $t2, $s3, LoopJMasterMind
@@ -223,6 +263,7 @@ LoopMatriz2String:
 	add $t5, $s4, $t1
 	sb $t4, 0($t5)
 	addi $t2, $t2, 1
+	addi $s1, $s1, 1
 	j LoopMatriz2String
 	
 LoopJMasterMind:
@@ -230,3 +271,65 @@ LoopJMasterMind:
 Exit:
 	li $v0, 10
 	syscall
+
+	# Funções #
+# Função que permite ver se o input é válido ou não #
+Verificacao:
+	addi $sp, $sp, -8
+	sw $ra, 4($sp)
+	sw $a0, 0($sp)
+	
+	la $t1, cores
+	li $v0, 0
+	blt $a0, 'a', VerificacaoCores
+	bgt $a0, 'z', VerificacaoCores
+	addi $a0, $a0, -32
+	
+VerificacaoCores:	
+	lb $t3, 0($t1)
+	beq $a0, $t3, Match
+	beq $t3, $0,EndVerificacao 
+	addi $t1, $t1, 1
+	j VerificacaoCores
+	
+Match:
+	addi $v0,$v0, 1
+	move $v1, $a0
+	j EndVerificacao
+	
+EndVerificacao:
+	lw $a0, 0($sp)
+	lw $ra, 4($sp)
+	addi $sp, $sp, 8
+	jr $ra
+
+
+TabuleiroDinamico:
+	mul $a0, $a0, $a1
+	li $v0, 9
+	syscall
+	jr $ra
+	
+	# Esta 
+TextoInicial:
+	la $t0, cores
+LoopPrintCores:
+	lb $t1, 0($t0)
+	beq $t1, $0, ExitTexto
+	beq $t1, 10, ExitTexto
+	li $v0, 11
+	move $a0, $t1
+	syscall
+	li $v0, 4
+	la $a0,MSGCores3
+	syscall
+	li $v0, 4
+	la $a0, MSGCores4
+	syscall
+	addi $t0, $t0, 1
+	j LoopPrintCores
+ExitTexto:
+	jr $ra
+
+	
+	
