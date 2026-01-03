@@ -6,10 +6,13 @@ msg_win:	.asciiz "\nYOU WIN\n"
 msg_lose:	.asciiz "\nYOU LOSE\n"
 msg_answer:	.asciiz "\na resposta correta era: "
 msg: 	.asciiz "\nDigite a sequencia: "
+MSGPontuacao: .asciiz "Pontuação: \n"
+MSGNewLine: .asciiz "\n"
 right: 	.asciiz " certa(s)\n"
 wrong: 	.asciiz " errada(s)\n"
 answer:	.space 50
 copia: 	.space 50
+pontuacao: .word 0
 .text
 	
 .globl main_ef
@@ -69,6 +72,18 @@ fim_ganhou:
 	li $v0, 4
 	la $a0, msg_win
 	syscall
+	lw $t0, pontuacao
+	addi $t0, $t0, 12
+	li $v0, 4
+	la $a0, MSGPontuacao
+	syscall
+	li $v0, 1
+	move $a0, $t0
+	syscall
+	sw $t0, pontuacao
+	li $v0, 4
+	la $a0, MSGNewLine
+	syscall
 	j sair
 
 fim_perdeu:
@@ -83,9 +98,25 @@ fim_perdeu:
 	la $a0, sequencia
     	li $v0, 4
     	syscall
+    	lw $t0, pontuacao
+    	addi $t0, $t0, -3
+    	bge $t0, 0, Compensacao
+	li $t0, 0
 	
+Compensacao:
+	mul $t1, $s0, 3
+	add $t0, $t0, $t1
+	li $v0, 4
+	la $a0, MSGPontuacao
+	syscall
+	li $v0, 1
+	move $a0, $t0
+	syscall
+	sw $t0, pontuacao
+	li $v0, 4
+	la $a0, MSGNewLine
+	syscall
 	j sair
-
 sair:
 	lw $ra, 0($sp)	# restaurar o $ra para voltar pro main
 	addi $sp, $sp, 4

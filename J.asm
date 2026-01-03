@@ -55,15 +55,33 @@ AnaliseAlfabeto:
 	
 	# voltamos a carregar o alfabeto para ver se existe só uma letra #
 	la $t0, cores
-	lb $t4, 0($t0) # guarda a primeira letra para depois percorrer o alfabeto e verificar se é só uma letra
-	addi $t0, $t0, 1 
+	
+LoopExterno:
+    	lb $t3, 0($t0) # carrega a primeira letra para depois percorrer o alfabeto e verificar se é só uma letra (corresponde a i no ciclo)
+    
+    	
+    	beq $t3, $0, AlfabetoValido # caso não haja nenhum problema, o alfabeto é válido
+    	beq $t3, 10, AlfabetoValido
+    
+   	
+    	addi $t2, $t0, 1 # j=i+1 para comparar a atual com a seguinte   
+	
+LoopInterno:
+    	lb $t4, 0($t2) # carrega a segunda letra para depois percorrer o alfabeto e verificar se é só uma letra (corresponde a j no ciclo)
+    
+    	
+    	beq $t4, $0, AvancaExterno
+    	beq $t4, 10, AvancaExterno
+    
+    	
+    	beq $t3, $t4, ErroInput # caso haja uma letra igual, input inválido
+    
+    	addi $t2, $t2, 1        # j++
+    	j LoopInterno
 
-LoopAlfabetoRepetidos:
-	lb $t2, 0($t0)
-	beq $t2, $0, ErroInput
-	bne $t2, $t4, AlfabetoValido
-	addi $t0, $t0, 1
-	j LoopAlfabetoRepetidos
+AvancaExterno:
+    	addi $t0, $t0, 1        # i++
+    	j LoopExterno
 
 AlfabetoDefault:
 	jal UpdateCores

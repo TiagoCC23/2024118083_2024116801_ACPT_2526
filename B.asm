@@ -43,19 +43,19 @@ loop:
 	lw $a1, numeroCores	# tamnho pode alterar!
 	syscall
 	
-	la $s0, cores
-    	add $s0, $s0, $a0
-    	lb $s1, 0($s0)
+	la $t4, cores
+    	add $t5, $t4, $a0
+    	lb $t1, 0($t5)
 
-    	la $s2, sequencia
-    	add $s2, $s2, $t0
-    	sb $s1, 0($s2)		# guarda a cor
+    	la $t6, sequencia
+    	add $t6, $t6, $t0
+    	sb $t1, 0($t6)		# guarda a cor
 	
 	addi $t0, $t0, 1	# i = 1 + 1
 	blt $t0, $s3, loop	# repete m vezes para obter a sequencia
 	
-	la $s2, sequencia
-	add $s2, $s2, $t0
-	sb $zero, 0($s2) # funciona como um '\0'
+	la $t6, sequencia
+	add $t6, $t6, $t0
+	sb $zero, 0($t6) # funciona como um '\0'
 	
 	jr $ra
