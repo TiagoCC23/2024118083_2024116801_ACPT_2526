@@ -6,11 +6,14 @@ msg_win:	.asciiz "\nYOU WIN\n"
 msg_lose:	.asciiz "\nYOU LOSE\n"
 msg_answer:	.asciiz "\na resposta correta era: "
 msg: 	.asciiz "\nDigite a sequencia: "
+MSGPontuacao: .asciiz "Pontuação: \n"
+MSGNewLine: .asciiz "\n"
 right: 	.asciiz " certa(s)\n"
 wrong: 	.asciiz " errada(s)\n"
-answer:	.space 4
-copia: 	.space 4
-	.text
+answer:	.space 50
+copia: 	.space 50
+pontuacao: .word 0
+.text
 	
 .globl main_ef
 .globl check
@@ -32,25 +35,25 @@ loop_jogo:
 
 	li $v0, 8
 	la $a0, answer
-	li $a1, 5
+	li $a1, 50
 	syscall
 	
-	la $t0, answer		# Carrega o endereï¿½o da string lida
+	la $t0, answer		# Carrega o endereço da string lida
 	
 loop_to_upper:
-	lb $t1, 0($t0)		# Lï¿½ o caracter atual
+	lb $t1, 0($t0)		# Lê o caracter atual
 	beq $t1, $zero, fim_upper  # Se for NULL (fim), para
 	beq $t1, 10, fim_upper     # Se for \n (enter), para
 	
-	# verifica se ï¿½ minï¿½scula
+	# verifica se é minúscula
 	li $t2, 97
 	blt $t1, $t2, proximo_char	# se for menor que 'a', ignora
 	li $t2, 122
 	bgt $t1, $t2, proximo_char	# Se for maior que 'z', ignora
 	
-	# Se chegou aqui, ï¿½ minï¿½scula. Subtrai 32 para virar maiï¿½scula.
+	# Se chegou aqui, é minúscula. Subtrai 32 para virar maiúscula.
 	sub $t1, $t1, 32
-	sb $t1, 0($t0)		# Salva a letra corrigida na memï¿½ria
+	sb $t1, 0($t0)		# Salva a letra corrigida na memória
 
 proximo_char:
 	addi $t0, $t0, 1	# proxima letra
@@ -60,8 +63,7 @@ fim_upper:
 	jal check
 
 
-	li $t9, 4
-	beq $v0, $t9, fim_ganhou
+	beq $v0, $s3, fim_ganhou
 
 	addi $s7, $s7, 1
 	j loop_jogo
@@ -69,6 +71,18 @@ fim_upper:
 fim_ganhou:
 	li $v0, 4
 	la $a0, msg_win
+	syscall
+	lw $t0, pontuacao
+	addi $t0, $t0, 12
+	li $v0, 4
+	la $a0, MSGPontuacao
+	syscall
+	li $v0, 1
+	move $a0, $t0
+	syscall
+	sw $t0, pontuacao
+	li $v0, 4
+	la $a0, MSGNewLine
 	syscall
 	j sair
 
@@ -84,9 +98,25 @@ fim_perdeu:
 	la $a0, sequencia
     	li $v0, 4
     	syscall
+    	lw $t0, pontuacao
+    	addi $t0, $t0, -3
+    	bge $t0, 0, Compensacao
+	li $t0, 0
 	
+Compensacao:
+	mul $t1, $s0, 3
+	add $t0, $t0, $t1
+	li $v0, 4
+	la $a0, MSGPontuacao
+	syscall
+	li $v0, 1
+	move $a0, $t0
+	syscall
+	sw $t0, pontuacao
+	li $v0, 4
+	la $a0, MSGNewLine
+	syscall
 	j sair
-
 sair:
 	lw $ra, 0($sp)	# restaurar o $ra para voltar pro main
 	addi $sp, $sp, 4
@@ -106,14 +136,14 @@ loop_copia:
 	addi $t1, $t1, 1	# proxima caixinha para a outra letra
 	addi $t2, $t2, 1	# i = i +1
 	
-	blt $t2, 4, loop_copia
+	blt $t2, $s3, loop_copia
 
 	li $s0, 0	# certos
 	li $s1, 0	# errados
 	li $t0, 0	# i = 0
 	
 loop_certo:
-	bge $t0, 4, end_certo
+	bge $t0, $s3, end_certo
 	
 	la $t1, answer
 	add $t1, $t1, $t0
@@ -128,7 +158,7 @@ loop_certo:
 	addi $s0, $s0, 1	# count = count + 1
 	li $t5, 42	# coloca um '*'
 	sb $t5, 0($t1)	# a resposta fica com '*'
-	sb $t5 0($t3)	# a cï¿½pia da senha fica com '*' tbm
+	sb $t5, 0($t3)	# a cópia da senha fica com '*' tbm
 	
 proximo_certo:
 	addi $t0, $t0, 1
@@ -138,7 +168,7 @@ end_certo:
 	li $t0, 0	# i = 0 dnv para poder usar no loop_errado
 	
 loop_errado:
-	bge $t0, 4, end
+	bge $t0, $s3, end
 	
 	la $t1, answer
 	add $t1, $t1, $t0
@@ -150,7 +180,7 @@ loop_errado:
 	li $t3, 0
 	
 ciclo_err:
-	bge $t3, 4, proximo_errado
+	bge $t3, $s3, proximo_errado
 	
 	la $t4, copia
 	add $t4, $t4, $t3
