@@ -39,9 +39,6 @@ MatrizLinhas: .word 10
 MatrizColunas: .word 4
 Input: .space 50
 .text
-#.globl Menu
-#.globl main
-
 
 main:	
 	# Função que já atualiza as cores #
@@ -200,19 +197,8 @@ LoopIString2Matriz:
 	move $s1, $0
 	move $t2, $0
 	
-IniciarJogo:
+
 		
-	jal gerador
-	
-	la $a0, sequencia
-	li $v0, 4
-	syscall
-	
-	move $a1, $s2
-	
-	jal main_ef
-	
-	j Menu
 	
 LoopVerificacaoString:
 
@@ -267,6 +253,18 @@ LoopMatriz2String:
 	j LoopMatriz2String
 	
 LoopJMasterMind:
+	jal gerador
+	
+	la $a0, sequencia
+	li $v0, 4
+	syscall
+	
+	move $a1, $s2
+	
+	jal main_ef
+	
+	j Menu
+	
 
 Exit:
 	li $v0, 10
