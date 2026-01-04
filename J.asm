@@ -34,14 +34,25 @@ InputAlfabeto:
 	 
 	
 LoopAnaliseString:
-	lb $t2,0($t0)
-	beq $t2, $0, AnaliseAlfabeto
-	beq $t2, 10, FimString # usa-se o 10, porque em código ASCII corresponde ao \n, aka enter
-	
-	addi $t0, $t0, 1 # avança para o próximo endereço da string para se ver o conteúdo
-	addi $t1, $t1, 1 # i++
-	
-	j LoopAnaliseString
+    lb $t2, 0($t0)     		 # Lê a letra
+    beq $t2, $0, AnaliseAlfabeto
+    beq $t2, 10, FimString 	 # usa-se o 10, porque em código ASCII corresponde ao \n, aka enter
+
+   
+    # se a letra for minúscula, vai passar a maiúscula #
+    li $t9, 97                  # carrega 'a' para $t9 e compara
+    blt $t2, $t9, NaoConverte   # Se for menor que 'a', ignora
+    li $t9, 122                 # carrega 'z' para $t9 e compara
+    bgt $t2, $t9, NaoConverte   # Se for maior que 'z', ignora
+    
+    addi $t2, $t2, -32          
+    sb $t2, 0($t0)              
+
+
+NaoConverte:
+    addi $t0, $t0, 1           # avança para o próximo endereço da string para se ver o conteúdo
+    addi $t1, $t1, 1           # i++
+    j LoopAnaliseString
 
 FimString:
 	sb $0, 0($t0) # tira o \n, fechando a string
