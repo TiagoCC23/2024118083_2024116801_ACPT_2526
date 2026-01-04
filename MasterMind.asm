@@ -188,9 +188,9 @@ IniciarJogo:
 	jal gerador
 	
 	# mostra a combinação correta o que deu jeito no debug #
-	la $a0, sequencia
-	li $v0, 4
-	syscall
+	#la $a0, sequencia
+	#li $v0, 4
+	#syscall
 	
 	
 	move $a1, $s2  # manda o número de linhas para a função do loop do jogo
