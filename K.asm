@@ -6,6 +6,7 @@
 .globl WHITE
 .globl YELLOW
 .globl ORANGE
+.globl PURPLE
 
 RED: 	.word 0x00FF0000
 GREEN: 	.word 0x0000FF00
@@ -13,6 +14,7 @@ BLUE: 	.word 0x000000FF
 WHITE: 	.word 0x00FFFFFF
 YELLOW: .word 0x00FFFF00
 ORANGE: .word 0x00FFA500 
+PURPLE: .word 0x00B78FD6
 
 .text
 .globl bitmap
@@ -34,7 +36,7 @@ bitmap:
 	li $s0, 0	# i = 0
 
 loop_desenho:
-    	bge $s0, 4, fim_desenho
+    	bge $s0, $s3, fim_desenho
 
     	add $t2, $s2, $s0
     	lb $t3, 0($t2)
@@ -46,9 +48,17 @@ loop_desenho:
     	beq $t3, 'W', cor_white
     	beq $t3, 'O', cor_orange
     
-    	li $a2, 0
+    	# Se não for nenhuma cor válida, pinta de preto #
+ 	beq $t3, 0, cor_black     # Null
+ 	beq $t3, 10, cor_black    # Enter
+ 	beq $t3, 32, cor_black    # Espaço
+    
+    	lw $a2, PURPLE
     	j desenhar_pixel
-
+    	
+cor_black:
+	li $a2, 0
+	j desenhar_pixel
 cor_red:
 	lw $a2, RED
 	j desenhar_pixel

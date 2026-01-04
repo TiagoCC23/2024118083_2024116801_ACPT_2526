@@ -83,48 +83,58 @@ proximo_char:
 
 fim_upper:
 
-    la $s0, answer      # Ponteiro para a resposta
-    li $t2, 0           # Contador de tamanho do input
+    	la $s0, answer      # Ponteiro para a resposta
+    	li $t2, 0           # Contador de tamanho do input
     
 LoopValidacao:
-    lb $a0, 0($s0)      # Carrega letra
+    	lb $a0, 0($s0)      # Carrega letra
     
   
-    beq $a0, 10, FimCheckTamanho
-    beq $a0, $0, FimCheckTamanho
+    	beq $a0, 10, FimCheckTamanho
+    	beq $a0, $0, FimCheckTamanho
     
 
-    jal Verificacao
+    	jal Verificacao
     
 
-    beq $v0, 0, ErroInput  
+    	beq $v0, 0, ErroInput  
     
-    # Se válido, guarda a letra corrigida (Maiúscula) que veio em $v1
-    sb $v1, 0($s0)
+    	# Se válido, guarda a letra corrigida (Maiúscula) que veio em $v1
+    	sb $v1, 0($s0)
     
    
-    addi $t2, $t2, 1    # avança o endereço da letra
-    addi $s0, $s0, 1    # avança o conteúdo letra
-    j LoopValidacao
+    	addi $t2, $t2, 1    # avança o endereço da letra
+    	addi $s0, $s0, 1    # avança o conteúdo letra
+    	j LoopValidacao
 
 FimCheckTamanho:
-    # se o contador ($t2) for diferente do número de colunas settado ($s3) temos um problema e é inválido
-    bne $t2, $s3, ErroInput  
+   	# se o contador ($t2) for diferente do número de colunas settado ($s3) temos um problema e é inválido
+   	bne $t2, $s3, ErroInput  
     
-    # avança na jogada #
-    addi $t7, $t7, -1
-    jal check
+	# É obrigatório recarregar o endereço de 'answer' em $a0
+
+	# antes de chamar o bitmap, pois $a0 foi alterado pelos syscalls.
+
+	la $a0, answer
+
+	move $a1, $s7 # Passa o número da tentativa atual
+
+	jal bitmap # Chama a função de desenho (K.asm)
     
-    beq $v0, $s3, fim_ganhou
-    addi $s7, $s7, 1
-    j loop_jogo
+    	# avança na jogada #
+   	addi $t7, $t7, -1
+    	jal check
+    
+    	beq $v0, $s3, fim_ganhou
+    	addi $s7, $s7, 1
+    	j loop_jogo
 
 
 ErroInput:
-    li $v0, 4
-    la $a0, MSGTentativaInvalida
-    syscall
-    j loop_jogo         
+    	li $v0, 4
+    	la $a0, MSGTentativaInvalida
+    	syscall
+    	j loop_jogo         
 
 
 fim_ganhou:
